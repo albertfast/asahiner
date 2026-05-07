@@ -9,10 +9,14 @@ import { Research } from "@/components/portfolio/Research";
 import { Awards } from "@/components/portfolio/Awards";
 import { Contact } from "@/components/portfolio/Contact";
 import { Footer } from "@/components/portfolio/Footer";
+import { ScrollProgress } from "@/components/portfolio/ScrollProgress";
+import { CursorTrail } from "@/components/portfolio/CursorTrail";
 
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col">
+      <ScrollProgress />
+      <CursorTrail />
       <Navbar />
       <Hero />
       <About />

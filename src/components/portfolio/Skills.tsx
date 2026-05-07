@@ -21,6 +21,8 @@ const categoryColors = [
     bg: "bg-cyan-accent/10 text-cyan-light border-cyan-accent/15",
     icon: "text-cyan-accent bg-cyan-accent/10",
     count: "text-cyan-light",
+    bar: "bg-cyan-accent",
+    barBg: "bg-cyan-accent/15",
   },
   {
     active: "from-emerald-accent to-emerald-accent/70",
@@ -29,6 +31,8 @@ const categoryColors = [
     bg: "bg-emerald-accent/10 text-emerald-accent border-emerald-accent/15",
     icon: "text-emerald-accent bg-emerald-accent/10",
     count: "text-emerald-accent",
+    bar: "bg-emerald-accent",
+    barBg: "bg-emerald-accent/15",
   },
   {
     active: "from-amber-accent to-amber-accent/70",
@@ -37,6 +41,8 @@ const categoryColors = [
     bg: "bg-amber-accent/10 text-amber-accent border-amber-accent/15",
     icon: "text-amber-accent bg-amber-accent/10",
     count: "text-amber-accent",
+    bar: "bg-amber-accent",
+    barBg: "bg-amber-accent/15",
   },
   {
     active: "from-pink-accent to-pink-accent/70",
@@ -45,10 +51,66 @@ const categoryColors = [
     bg: "bg-pink-accent/10 text-pink-accent border-pink-accent/15",
     icon: "text-pink-accent bg-pink-accent/10",
     count: "text-pink-accent",
+    bar: "bg-pink-accent",
+    barBg: "bg-pink-accent/15",
   },
 ];
 
 const overviewIcons = [Zap, Database, Globe, Sparkles];
+
+// Proficiency map — realistic simulated values (65-95%)
+const skillProficiency: Record<string, number> = {
+  // Languages & Frameworks
+  Python: 90,
+  JavaScript: 88,
+  TypeScript: 85,
+  Java: 75,
+  HTML: 92,
+  CSS: 90,
+  React: 88,
+  "React Native (Expo)": 82,
+  "Expo Go": 80,
+  "iOS & Android Apps": 78,
+  TailwindCSS: 87,
+  Bootstrap: 82,
+
+  // Backend & Databases
+  "Node.js": 85,
+  Flask: 80,
+  Django: 78,
+  Supabase: 82,
+  PostgreSQL: 80,
+  MySQL: 78,
+  "API Integration": 88,
+  "REST APIs": 90,
+  "SOAP APIs": 75,
+
+  // Cloud & DevOps
+  "Salesforce Sales Cloud": 88,
+  "Salesforce CPQ": 82,
+  "Billing Cloud": 78,
+  Apex: 80,
+  LWC: 82,
+  Heroku: 75,
+  Copado: 72,
+  Git: 90,
+  GitHub: 92,
+  Jenkins: 68,
+  Postman: 85,
+  "VS Code": 90,
+  "Agile Methodology": 85,
+  Trello: 80,
+
+  // AI & Machine Learning
+  NumPy: 85,
+  Pandas: 83,
+  "scikit-learn": 78,
+  PyTorch: 75,
+  "Q-learning": 72,
+  DQN: 70,
+  "LLM Prompt Engineering": 80,
+  "Data Evaluation": 77,
+};
 
 export function Skills() {
   const [activeCategory, setActiveCategory] = useState(0);
@@ -92,7 +154,7 @@ export function Skills() {
           })}
         </motion.div>
 
-        {/* Skills Grid */}
+        {/* Skills Grid with Proficiency Bars */}
         <motion.div
           key={activeCategory}
           initial={{ opacity: 0, y: 10 }}
@@ -100,18 +162,31 @@ export function Skills() {
           transition={{ duration: 0.3 }}
           className="flex flex-wrap justify-center gap-3"
         >
-          {skillCategories[activeCategory].skills.map((skill, i) => (
-            <motion.span
-              key={skill}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ scale: 1.08, y: -2 }}
-              transition={{ duration: 0.3, delay: i * 0.03 }}
-              className={`px-4 py-2 text-sm font-medium rounded-lg glass-card ${colors.pill} transition-all duration-200 cursor-default`}
-            >
-              {skill}
-            </motion.span>
-          ))}
+          {skillCategories[activeCategory].skills.map((skill, i) => {
+            const proficiency = skillProficiency[skill] ?? 75;
+            return (
+              <motion.span
+                key={skill}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ scale: 1.08, y: -2 }}
+                transition={{ duration: 0.3, delay: i * 0.03 }}
+                className={`px-4 py-2 text-sm font-medium rounded-lg glass-card ${colors.pill} transition-all duration-200 cursor-default flex flex-col items-center gap-1.5`}
+              >
+                <span>{skill}</span>
+                {/* Proficiency progress bar */}
+                <div className={`w-full h-[2px] rounded-full ${colors.barBg} overflow-hidden`}>
+                  <motion.div
+                    className={`h-full rounded-full ${colors.bar}`}
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${proficiency}%` }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: i * 0.04 + 0.2, ease: "easeOut" }}
+                  />
+                </div>
+              </motion.span>
+            );
+          })}
         </motion.div>
 
         {/* All Skills Preview */}
