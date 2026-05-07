@@ -35,7 +35,7 @@ export function About() {
       <AboutCyberBackground />
 
       <div className="mx-auto max-w-6xl relative z-10">
-        <SectionHeading title="About Me" subtitle="A brief introduction to who I am and what drives me" />
+        <SectionHeading title="About Me" subtitle="From finance to full-stack engineering — driven by curiosity and continuous learning" />
 
         <div className="grid md:grid-cols-3 gap-8 md:gap-12 items-start">
           {/* Avatar */}
