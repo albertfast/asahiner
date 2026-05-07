@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -15,11 +16,49 @@ const Scene3D = dynamic(
   }
 );
 
+function useTypewriter(text: string, speed: number = 40, startDelay: number = 1000) {
+  const [displayText, setDisplayText] = useState("");
+  const [isComplete, setIsComplete] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+
+    // Delay before typing starts
+    timeout = setTimeout(() => {
+      setHasStarted(true);
+      let index = 0;
+
+      const typeChar = () => {
+        if (index < text.length) {
+          setDisplayText(text.slice(0, index + 1));
+          index++;
+          timeout = setTimeout(typeChar, speed);
+        } else {
+          setIsComplete(true);
+        }
+      };
+
+      typeChar();
+    }, startDelay);
+
+    return () => clearTimeout(timeout);
+  }, [text, speed, startDelay]);
+
+  return { displayText, isComplete, hasStarted };
+}
+
 export function Hero() {
   const handleScrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
+
+  const { displayText, isComplete, hasStarted } = useTypewriter(
+    personalInfo.tagline,
+    40,
+    1000 // starts after name fade-in (~0.6s + buffer)
+  );
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -51,12 +90,19 @@ export function Hero() {
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-            className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: hasStarted ? 1 : 0 }}
+            transition={{ duration: 0.3 }}
+            className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed min-h-[3.5rem] md:min-h-[2.5rem]"
           >
-            {personalInfo.tagline}
+            <span>{displayText}</span>
+            <span
+              className={`inline-block ml-0.5 text-cyan-accent ${
+                isComplete ? "animate-blink" : "opacity-100"
+              }`}
+            >
+              |
+            </span>
           </motion.p>
 
           <motion.div
@@ -96,6 +142,17 @@ export function Hero() {
           <ArrowDown size={24} />
         </motion.div>
       </motion.div>
+
+      {/* Blinking cursor animation styles */}
+      <style jsx global>{`
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+        .animate-blink {
+          animation: blink 1s step-end infinite;
+        }
+      `}</style>
     </section>
   );
 }

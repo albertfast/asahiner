@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { User, GraduationCap, FolderGit2, Briefcase } from "lucide-react";
 import dynamic from "next/dynamic";
 import { SectionHeading } from "./SectionHeading";
+import { AnimatedCounter } from "./AnimatedCounter";
 import { aboutContent } from "@/lib/data";
 import profilePhoto from "@/static/flash-story-sahne-1.jpg";
 
@@ -108,7 +109,7 @@ export function About() {
                   <Icon className={`w-5 h-5 ${color.icon}`} />
                 </div>
                 <div className={`text-2xl md:text-3xl font-bold ${statGradientTexts[i]}`}>
-                  {stat.value}
+                  <AnimatedCounter value={stat.value} />
                 </div>
                 <div className="text-xs md:text-sm text-muted-foreground mt-1">
                   {stat.label}

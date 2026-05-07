@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Send, Mail, Phone, Github, Linkedin, CheckCircle, MapPin, MessageSquare } from "lucide-react";
 import dynamic from "next/dynamic";
 import { SectionHeading } from "./SectionHeading";
@@ -20,6 +20,8 @@ interface FormData {
   message: string;
 }
 
+const MAX_MESSAGE_LENGTH = 500;
+
 const contactCards = [
   { icon: Mail, label: "Email", value: personalInfo.email, href: `mailto:${personalInfo.email}`, color: "text-cyan-accent bg-cyan-accent/10" },
   { icon: Phone, label: "Phone", value: personalInfo.phone, href: `tel:${personalInfo.phone}`, color: "text-emerald-accent bg-emerald-accent/10" },
@@ -27,6 +29,189 @@ const contactCards = [
   { icon: Linkedin, label: "LinkedIn", value: personalInfo.linkedin, href: personalInfo.linkedinUrl, color: "text-pink-accent bg-pink-accent/10" },
 ];
 
+/* ---------- Floating Label Input ---------- */
+function FloatingInput({
+  id,
+  label,
+  type = "text",
+  value,
+  onChange,
+  error,
+  placeholder,
+}: {
+  id: string;
+  label: string;
+  type?: string;
+  value: string;
+  onChange: (v: string) => void;
+  error?: string;
+  placeholder?: string;
+}) {
+  const isActive = value.length > 0;
+  return (
+    <div className="floating-label-group">
+      <input
+        id={id}
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={`w-full px-3 py-2.5 rounded-lg text-sm sm:text-base bg-background border ${
+          error
+            ? "border-destructive"
+            : "border-input focus-glow-animated"
+        } outline-none transition-all duration-300 pt-3 ${
+          isActive ? "border-cyan-accent/50" : ""
+        }`}
+        placeholder={placeholder || " "}
+        autoComplete="off"
+      />
+      <label
+        htmlFor={id}
+        className={`transition-all duration-200 ${
+          isActive ? "float-active" : ""
+        } ${error ? "!text-destructive" : ""}`}
+      >
+        {label}
+      </label>
+      {error && (
+        <motion.p
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-xs text-destructive mt-1"
+        >
+          {error}
+        </motion.p>
+      )}
+    </div>
+  );
+}
+
+/* ---------- Floating Label Textarea ---------- */
+function FloatingTextarea({
+  id,
+  label,
+  value,
+  onChange,
+  error,
+  placeholder,
+  rows = 5,
+  maxLength = MAX_MESSAGE_LENGTH,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  error?: string;
+  placeholder?: string;
+  rows?: number;
+  maxLength?: number;
+}) {
+  const isActive = value.length > 0;
+  const charCount = value.length;
+  const isNearLimit = charCount > maxLength * 0.8;
+  const isOverLimit = charCount > maxLength;
+
+  return (
+    <div>
+      <div className="floating-label-group">
+        <textarea
+          id={id}
+          value={value}
+          onChange={(e) => onChange(e.target.value.slice(0, maxLength + 50))}
+          rows={rows}
+          className={`w-full px-3 py-2.5 rounded-lg text-sm sm:text-base bg-background border resize-none ${
+            error
+              ? "border-destructive"
+              : isOverLimit
+              ? "border-amber-accent"
+              : "border-input focus-glow-animated"
+          } outline-none transition-all duration-300 pt-3 ${
+            isActive && !isOverLimit ? "border-cyan-accent/50" : ""
+          }`}
+          placeholder={placeholder || " "}
+        />
+        <label
+          htmlFor={id}
+          className={`transition-all duration-200 ${
+            isActive ? "float-active" : ""
+          } ${error ? "!text-destructive" : ""}`}
+        >
+          {label}
+        </label>
+      </div>
+      <div className="flex items-center justify-between mt-1 gap-2 min-h-[1.25rem]">
+        {error ? (
+          <motion.p
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-xs text-destructive truncate"
+          >
+            {error}
+          </motion.p>
+        ) : (
+          <span />
+        )}
+        <span
+          className={`text-[0.7rem] sm:text-xs ml-auto shrink-0 transition-colors duration-200 ${
+            isOverLimit
+              ? "text-amber-accent font-medium"
+              : isNearLimit
+              ? "text-yellow-500"
+              : "text-muted-foreground/50"
+          }`}
+        >
+          {charCount}/{maxLength}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Success Animation ---------- */
+function SuccessAnimation() {
+  return (
+    <motion.div
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0, opacity: 0 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className="flex flex-col items-center justify-center gap-3 py-8 sm:py-12 w-full"
+    >
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.1 }}
+        className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-accent/20 to-purple-accent/20 border border-cyan-accent/40 flex items-center justify-center"
+      >
+        <motion.div
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.3 }}
+        >
+          <CheckCircle className="w-8 h-8 text-cyan-accent" />
+        </motion.div>
+      </motion.div>
+      <motion.p
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="text-sm font-medium gradient-text"
+      >
+        Email draft opened!
+      </motion.p>
+      <motion.p
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="text-xs text-muted-foreground"
+      >
+        Complete sending in your mail app
+      </motion.p>
+    </motion.div>
+  );
+}
+
+/* ---------- Main Contact Component ---------- */
 export function Contact() {
   const [form, setForm] = useState<FormData>({
     name: "",
@@ -36,6 +221,7 @@ export function Contact() {
   });
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const validate = (): boolean => {
     const newErrors: Partial<FormData> = {};
@@ -47,6 +233,8 @@ export function Contact() {
     if (!form.message.trim()) newErrors.message = "Message is required";
     else if (form.message.trim().length < 10)
       newErrors.message = "Message must be at least 10 characters";
+    else if (form.message.length > MAX_MESSAGE_LENGTH)
+      newErrors.message = `Message must be under ${MAX_MESSAGE_LENGTH} characters`;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -69,9 +257,15 @@ export function Contact() {
     toast.success("Email draft opened in your mail app.", {
       icon: <CheckCircle className="w-4 h-4 text-green-500" />,
     });
-    setForm({ name: "", email: "", subject: "", message: "" });
-    setErrors({});
-    setSubmitting(false);
+
+    // Show success animation briefly
+    setShowSuccess(true);
+    setTimeout(() => {
+      setShowSuccess(false);
+      setForm({ name: "", email: "", subject: "", message: "" });
+      setErrors({});
+      setSubmitting(false);
+    }, 2500);
   };
 
   const updateField = (field: keyof FormData, value: string) => {
@@ -162,143 +356,71 @@ export function Contact() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="md:col-span-3"
           >
-            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-xs font-medium mb-1.5 text-muted-foreground"
-                  >
-                    Name
-                  </label>
-                  <input
-                    id="name"
-                    type="text"
-                    value={form.name}
-                    onChange={(e) => updateField("name", e.target.value)}
-                    className={`w-full px-3 py-2.5 rounded-lg text-sm bg-background border ${
-                      errors.name
-                        ? "border-destructive"
-                        : "border-input focus-glow-cyan"
-                    } outline-none transition-all duration-300 placeholder:text-muted-foreground/50`}
-                    placeholder="Your name"
-                  />
-                  {errors.name && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-xs text-destructive mt-1"
-                    >
-                      {errors.name}
-                    </motion.p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-xs font-medium mb-1.5 text-muted-foreground"
-                  >
-                    Email
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => updateField("email", e.target.value)}
-                    className={`w-full px-3 py-2.5 rounded-lg text-sm bg-background border ${
-                      errors.email
-                        ? "border-destructive"
-                        : "border-input focus-glow-cyan"
-                    } outline-none transition-all duration-300 placeholder:text-muted-foreground/50`}
-                    placeholder="your@email.com"
-                  />
-                  {errors.email && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-xs text-destructive mt-1"
-                    >
-                      {errors.email}
-                    </motion.p>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="subject"
-                  className="block text-xs font-medium mb-1.5 text-muted-foreground"
+            <AnimatePresence mode="wait">
+              {showSuccess ? (
+                <SuccessAnimation key="success" />
+              ) : (
+                <motion.form
+                  key="form"
+                  onSubmit={handleSubmit}
+                  className="space-y-4"
+                  noValidate
                 >
-                  Subject
-                </label>
-                <input
-                  id="subject"
-                  type="text"
-                  value={form.subject}
-                  onChange={(e) => updateField("subject", e.target.value)}
-                  className={`w-full px-3 py-2.5 rounded-lg text-sm bg-background border ${
-                    errors.subject
-                      ? "border-destructive"
-                      : "border-input focus-glow-cyan"
-                  } outline-none transition-all duration-300 placeholder:text-muted-foreground/50`}
-                  placeholder="What's this about?"
-                />
-                {errors.subject && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-xs text-destructive mt-1"
-                  >
-                    {errors.subject}
-                  </motion.p>
-                )}
-              </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <FloatingInput
+                      id="name"
+                      label="Name"
+                      value={form.name}
+                      onChange={(v) => updateField("name", v)}
+                      error={errors.name}
+                      placeholder=" "
+                    />
+                    <FloatingInput
+                      id="email"
+                      label="Email"
+                      type="email"
+                      value={form.email}
+                      onChange={(v) => updateField("email", v)}
+                      error={errors.email}
+                      placeholder=" "
+                    />
+                  </div>
 
-              <div>
-                <label
-                  htmlFor="message"
-                  className="block text-xs font-medium mb-1.5 text-muted-foreground"
-                >
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  value={form.message}
-                  onChange={(e) => updateField("message", e.target.value)}
-                  rows={5}
-                  className={`w-full px-3 py-2.5 rounded-lg text-sm bg-background border resize-none ${
-                    errors.message
-                      ? "border-destructive"
-                      : "border-input focus-glow-cyan"
-                  } outline-none transition-all duration-300 placeholder:text-muted-foreground/50`}
-                  placeholder="Tell me about your project or opportunity..."
-                />
-                {errors.message && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-xs text-destructive mt-1"
-                  >
-                    {errors.message}
-                  </motion.p>
-                )}
-              </div>
+                  <FloatingInput
+                    id="subject"
+                    label="Subject"
+                    value={form.subject}
+                    onChange={(v) => updateField("subject", v)}
+                    error={errors.subject}
+                    placeholder=" "
+                  />
 
-              <motion.button
-                type="submit"
-                disabled={submitting}
-                whileHover={{ scale: 1.02, y: -1 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full sm:w-auto px-8 py-3 rounded-lg text-sm font-medium text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 btn-shimmer"
-                style={{
-                  backgroundImage: "linear-gradient(90deg, #06b6d4, #a855f7, #ec4899, #06b6d4)",
-                  backgroundSize: "300% 100%",
-                }}
-              >
-                <Send className="w-4 h-4" />
-                {submitting ? "Opening..." : "Send Message"}
-              </motion.button>
-            </form>
+                  <FloatingTextarea
+                    id="message"
+                    label="Message"
+                    value={form.message}
+                    onChange={(v) => updateField("message", v)}
+                    error={errors.message}
+                    placeholder=" "
+                  />
+
+                  <motion.button
+                    type="submit"
+                    disabled={submitting}
+                    whileHover={{ scale: 1.02, y: -1 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full sm:w-auto px-8 py-3 rounded-lg text-sm font-medium text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 btn-shimmer"
+                    style={{
+                      backgroundImage: "linear-gradient(90deg, #06b6d4, #a855f7, #ec4899, #06b6d4)",
+                      backgroundSize: "300% 100%",
+                    }}
+                  >
+                    <Send className="w-4 h-4" />
+                    {submitting ? "Opening..." : "Send Message"}
+                  </motion.button>
+                </motion.form>
+              )}
+            </AnimatePresence>
           </motion.div>
         </div>
       </div>
