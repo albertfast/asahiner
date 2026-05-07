@@ -17,13 +17,13 @@ export const aboutContent = {
   paragraphs: [
     "Born and raised in Istanbul, I began my academic journey in finance and earned a Bachelor of Science from Adnan Menderes University in 2015. After moving to the United States, I reinvented myself as a software engineer. I obtained Salesforce Administrator and Platform Developer I certifications and immersed myself in web and mobile development at City College of San Francisco. I’m now completing an Associate of Science in Computer Science (3.63 GPA) while earning certificates in Advanced Web Development Techniques, Web Application Programming, and Front‑End Web Development.",
     "I thrive at the intersection of innovation and problem solving. I’ve built full‑stack iOS and Android apps with React Native and Expo, integrated Supabase/PostgreSQL back‑ends, and designed scalable APIs. My projects range from real‑time transit‑tracking systems and reinforcement‑learning experiments using DQN/Q‑learning to nonprofit CRM solutions with Salesforce Sales and Billing Clouds. Through internships and open‑source contributions, I’ve integrated modern logging frameworks, led teams of interns, and explored AI research workflows for domain‑specific language models.",
-    "My passion for AI isn’t limited to conventional applications: I’ve trained reinforcement‑learning agents over tens of thousands of episodes to optimize lunar landings and other control tasks, visualizing learning trajectories and experimenting with ε‑greedy strategies. I’m equally fascinated by quantum computing and the potential of emerging technologies. Combining analytical thinking honed in finance with hands‑on engineering skills, I’m committed to continuous learning and collaboration, whether building new applications, contributing to open source, or exploring the frontiers of technology."
+    "My passion for AI isn’t limited to conventional applications: I’ve trained reinforcement‑learning agents over tens of thousands of episodes to optimize lunar landings and other control tasks, visualizing learning trajectories and experimenting with ε‑greedy strategies. I’m equally fascinated by quantum computing and the potential of emerging technologies. Combining analytical thinking honed in finance with hands‑on engineering skills, I’m committed to continuous learning and collaboration, whether building new applications, contributing to open source, or exploring the frontiers of technology.",
   ],
   stats: [
     { label: "Education", value: "5" },
     { label: "Certifications", value: "4" },
     { label: "Projects", value: "10+" },
-    { label: "Experiences", value: "5" }
+    { label: "Experiences", value: "5" },
   ],
 };
 
