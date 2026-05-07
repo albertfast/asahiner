@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 
 interface Particle {
   x: number;
@@ -28,6 +28,7 @@ export function CursorTrail() {
   const rafRef = useRef<number>(0);
   const isDesktopRef = useRef(false);
   const prefersReducedMotionRef = useRef(false);
+  const [shouldRender, setShouldRender] = useState(false);
 
   const animate = useCallback(() => {
     const canvas = canvasRef.current;
@@ -86,16 +87,20 @@ export function CursorTrail() {
 
   useEffect(() => {
     // Check desktop
-    isDesktopRef.current = window.innerWidth > 768;
+    const isDesktop = window.innerWidth > 768;
+    isDesktopRef.current = isDesktop;
 
     // Check prefers-reduced-motion
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     prefersReducedMotionRef.current = mediaQuery.matches;
 
-    // If not desktop or prefers reduced motion, don't set up
-    if (!isDesktopRef.current || prefersReducedMotionRef.current) {
+    // If not desktop or prefers reduced motion, don't render at all
+    if (!isDesktop || prefersReducedMotionRef.current) {
+      setShouldRender(false);
       return;
     }
+
+    setShouldRender(true);
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -104,7 +109,13 @@ export function CursorTrail() {
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      isDesktopRef.current = window.innerWidth > 768;
+      const nowDesktop = window.innerWidth > 768;
+      isDesktopRef.current = nowDesktop;
+      // If resized to mobile, stop
+      if (!nowDesktop) {
+        cancelAnimationFrame(rafRef.current);
+        setShouldRender(false);
+      }
     };
     resizeCanvas();
 
@@ -119,6 +130,10 @@ export function CursorTrail() {
 
     const handleReducedMotionChange = (e: MediaQueryListEvent) => {
       prefersReducedMotionRef.current = e.matches;
+      if (e.matches) {
+        cancelAnimationFrame(rafRef.current);
+        setShouldRender(false);
+      }
     };
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
@@ -135,11 +150,13 @@ export function CursorTrail() {
     };
   }, [animate]);
 
-  // Don't render canvas at all if not needed (SSR check happens in useEffect)
+  // Don't render canvas on mobile or when reduced motion is preferred
+  if (!shouldRender) return null;
+
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-[100]"
+      className="fixed inset-0 pointer-events-none z-[100] touch-none"
       aria-hidden="true"
     />
   );

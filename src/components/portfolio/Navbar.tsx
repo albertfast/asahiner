@@ -137,7 +137,7 @@ export function Navbar() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
-              className="md:hidden glass-card border-t border-cyan-accent/10 overflow-hidden"
+              className="md:hidden glass-card border-t border-cyan-accent/10 overflow-hidden relative z-[60]"
             >
               <div className="px-4 py-3 space-y-1">
                 {navLinks.map((link) => (
@@ -170,7 +170,7 @@ export function Navbar() {
             onClick={scrollToTop}
             whileHover={{ scale: 1.1, y: -2 }}
             whileTap={{ scale: 0.9 }}
-            className="fixed bottom-6 right-6 z-40 w-11 h-11 rounded-full flex items-center justify-center text-white shadow-lg shadow-cyan-accent/20 hover:shadow-purple-accent/30 transition-shadow duration-300"
+            className="fixed bottom-6 right-6 z-40 w-11 h-11 rounded-full flex items-center justify-center text-white shadow-lg shadow-cyan-accent/20 hover:shadow-purple-accent/30 transition-shadow duration-300 mb-safe"
             style={{
               backgroundImage: "linear-gradient(135deg, #06b6d4, #a855f7)",
             }}

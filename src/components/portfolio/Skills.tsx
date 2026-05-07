@@ -4,6 +4,15 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Code2, Server, Cloud, Brain, Zap, Database, Globe, Sparkles } from "lucide-react";
 import dynamic from "next/dynamic";
+import {
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
 import { SectionHeading } from "./SectionHeading";
 import { skillCategories } from "@/lib/data";
 
@@ -57,6 +66,23 @@ const categoryColors = [
 ];
 
 const overviewIcons = [Zap, Database, Globe, Sparkles];
+
+// Radar chart data derived from skill categories
+const radarData = skillCategories.map((cat) => ({
+  category: cat.title.split(" & ")[0],
+  skills: cat.skills.length,
+  fullMark: 15,
+}));
+
+// Custom tooltip for the radar chart
+function RadarTooltip({ active, payload }: { active?: boolean; payload?: Array<{ value: number; name: string }> }) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="glass-card rounded-lg px-3 py-2 text-xs border border-cyan-accent/20 bg-background/95">
+      <p className="text-cyan-light font-medium">{payload[0].value} skills</p>
+    </div>
+  );
+}
 
 // Proficiency map — realistic simulated values (65-95%)
 const skillProficiency: Record<string, number> = {
@@ -202,29 +228,79 @@ export function Skills() {
               <h3 className="text-sm font-semibold mb-4 text-center gradient-text">
                 Quick Overview
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {skillCategories.map((cat, i) => {
-                  const OverviewIcon = overviewIcons[i];
-                  const catColor = categoryColors[i];
-                  return (
-                    <motion.div
-                      key={cat.title}
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                      className={`text-center p-3 rounded-lg bg-gradient-to-br ${catColor.bg.split(" ")[0]}/5 to-transparent border ${catColor.bg.split(" ")[2]}/20 transition-all duration-300`}
-                    >
-                      <div className={`w-10 h-10 rounded-lg ${catColor.icon} flex items-center justify-center mx-auto mb-2`}>
-                        <OverviewIcon className="w-5 h-5" />
-                      </div>
-                      <p className="text-xs font-medium text-muted-foreground">
-                        {cat.title}
-                      </p>
-                      <p className={`text-lg font-bold ${catColor.count} mt-1`}>
-                        {cat.skills.length}
-                      </p>
-                    </motion.div>
-                  );
-                })}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                {/* Category stats grid */}
+                <div className="grid grid-cols-2 gap-3">
+                  {skillCategories.map((cat, i) => {
+                    const OverviewIcon = overviewIcons[i];
+                    const catColor = categoryColors[i];
+                    return (
+                      <motion.div
+                        key={cat.title}
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        className={`text-center p-3 rounded-lg bg-gradient-to-br ${catColor.bg.split(" ")[0]}/5 to-transparent border ${catColor.bg.split(" ")[2]}/20 transition-all duration-300`}
+                      >
+                        <div className={`w-10 h-10 rounded-lg ${catColor.icon} flex items-center justify-center mx-auto mb-2`}>
+                          <OverviewIcon className="w-5 h-5" />
+                        </div>
+                        <p className="text-xs font-medium text-muted-foreground">
+                          {cat.title}
+                        </p>
+                        <p className={`text-lg font-bold ${catColor.count} mt-1`}>
+                          {cat.skills.length}
+                        </p>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+
+                {/* Radar Chart */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                  className="flex items-center justify-center"
+                >
+                  <div className="w-full max-w-[280px] md:max-w-[320px]">
+                    <ResponsiveContainer width="100%" height={280}>
+                      <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+                        <PolarGrid
+                          stroke="#06b6d440"
+                          strokeDasharray="3 3"
+                        />
+                        <PolarAngleAxis
+                          dataKey="category"
+                          tick={{ fill: "#94a3b8", fontSize: 11 }}
+                        />
+                        <PolarRadiusAxis
+                          angle={90}
+                          domain={[0, 15]}
+                          tick={false}
+                          axisLine={false}
+                        />
+                        <Radar
+                          name="Skills"
+                          dataKey="skills"
+                          stroke="#06b6d4"
+                          fill="url(#radarGradient)"
+                          strokeWidth={2}
+                          fillOpacity={0.4}
+                          dot={{ r: 4, fill: "#06b6d4", stroke: "#06b6d4", strokeWidth: 2 }}
+                          activeDot={{ r: 6, fill: "#a855f7", stroke: "#a855f7", strokeWidth: 2 }}
+                        />
+                        <Tooltip content={<RadarTooltip />} />
+                        <defs>
+                          <linearGradient id="radarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#06b6d4" stopOpacity={0.6} />
+                            <stop offset="100%" stopColor="#a855f7" stopOpacity={0.3} />
+                          </linearGradient>
+                        </defs>
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </motion.div>
               </div>
             </div>
           </div>

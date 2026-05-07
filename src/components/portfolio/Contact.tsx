@@ -55,7 +55,7 @@ function FloatingInput({
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full px-3 py-2.5 rounded-lg text-sm bg-background border ${
+        className={`w-full px-3 py-2.5 rounded-lg text-sm sm:text-base bg-background border ${
           error
             ? "border-destructive"
             : "border-input focus-glow-animated"
@@ -63,6 +63,7 @@ function FloatingInput({
           isActive ? "border-cyan-accent/50" : ""
         }`}
         placeholder={placeholder || " "}
+        autoComplete="off"
       />
       <label
         htmlFor={id}
@@ -118,7 +119,7 @@ function FloatingTextarea({
           value={value}
           onChange={(e) => onChange(e.target.value.slice(0, maxLength + 50))}
           rows={rows}
-          className={`w-full px-3 py-2.5 rounded-lg text-sm bg-background border resize-none ${
+          className={`w-full px-3 py-2.5 rounded-lg text-sm sm:text-base bg-background border resize-none ${
             error
               ? "border-destructive"
               : isOverLimit
@@ -138,12 +139,12 @@ function FloatingTextarea({
           {label}
         </label>
       </div>
-      <div className="flex items-center justify-between mt-1">
+      <div className="flex items-center justify-between mt-1 gap-2 min-h-[1.25rem]">
         {error ? (
           <motion.p
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-xs text-destructive"
+            className="text-xs text-destructive truncate"
           >
             {error}
           </motion.p>
@@ -151,7 +152,7 @@ function FloatingTextarea({
           <span />
         )}
         <span
-          className={`text-xs ml-auto transition-colors duration-200 ${
+          className={`text-[0.7rem] sm:text-xs ml-auto shrink-0 transition-colors duration-200 ${
             isOverLimit
               ? "text-amber-accent font-medium"
               : isNearLimit
@@ -159,7 +160,7 @@ function FloatingTextarea({
               : "text-muted-foreground/50"
           }`}
         >
-          {charCount}/{maxLength} characters
+          {charCount}/{maxLength}
         </span>
       </div>
     </div>
@@ -174,7 +175,7 @@ function SuccessAnimation() {
       animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 0, opacity: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="flex flex-col items-center justify-center gap-3 py-12"
+      className="flex flex-col items-center justify-center gap-3 py-8 sm:py-12 w-full"
     >
       <motion.div
         initial={{ scale: 0 }}

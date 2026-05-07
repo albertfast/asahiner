@@ -722,7 +722,10 @@ html {
   transform: translateY(-50%);
   font-size: 0.7rem;
   color: #06b6d4;
-  background: var(--background, #0a0a1a);
+  background: var(--background);
+}
+html:not(.dark) .floating-label-group label.float-active {
+  background: oklch(1 0 0);
 }
 .floating-label-group textarea ~ label {
   top: 14px;
@@ -733,7 +736,10 @@ html {
   transform: translateY(-50%);
   font-size: 0.7rem;
   color: #06b6d4;
-  background: var(--background, #0a0a1a);
+  background: var(--background);
+}
+html:not(.dark) .floating-label-group textarea ~ label.float-active {
+  background: oklch(1 0 0);
 }
 
 /* Footer shimmer top border */

@@ -35,10 +35,7 @@ export function Footer() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const lastUpdated = new Date().toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-  });
+  const lastUpdated = "March 2025";
 
   return (
     <footer className="relative py-12 px-4 overflow-hidden">
@@ -136,21 +133,21 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="pt-6 border-t border-gradient-to-r from-transparent via-border to-transparent flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
-            <p className="text-xs text-muted-foreground">
-              &copy; {new Date().getFullYear()} {personalInfo.name}. All rights reserved.
+        <div className="pt-6 border-t border-gradient-to-r from-transparent via-border to-transparent flex flex-col items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3 text-center">
+            <p className="text-xs text-muted-foreground whitespace-nowrap">
+              &copy; 2025 {personalInfo.name}. All rights reserved.
             </p>
             <span className="hidden sm:inline text-xs text-muted-foreground/40">·</span>
             <p className="text-xs text-muted-foreground/60">
               Last updated: {lastUpdated}
             </p>
           </div>
-          <p className="text-xs text-muted-foreground flex items-center gap-1">
-            Built with <Heart className="w-3 h-3 text-rose-accent" /> using
-            <span className="text-cyan-accent"> Next.js</span>,{" "}
-            <span className="text-purple-accent">Three.js</span> &{" "}
-            <span className="text-pink-accent">Framer Motion</span>
+          <p className="text-xs text-muted-foreground flex flex-wrap items-center justify-center gap-x-1 gap-y-0 text-center">
+            Built with <Heart className="w-3 h-3 text-rose-accent inline" /> using
+            <span className="text-cyan-accent"> Next.js</span>,
+            <span className="text-purple-accent"> Three.js</span> &
+            <span className="text-pink-accent"> Framer Motion</span>
           </p>
           <motion.button
             onClick={scrollToTop}
