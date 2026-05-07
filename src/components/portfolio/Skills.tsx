@@ -3,8 +3,14 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Code2, Server, Cloud, Brain, Zap, Database, Globe, Sparkles } from "lucide-react";
+import dynamic from "next/dynamic";
 import { SectionHeading } from "./SectionHeading";
 import { skillCategories } from "@/lib/data";
+
+const SectionAmbient3D = dynamic(
+  () => import("./SectionAmbient3D").then((mod) => ({ default: mod.SectionAmbient3D })),
+  { ssr: false }
+);
 
 const categoryIcons = [Code2, Server, Cloud, Brain];
 const categoryColors = [
@@ -50,9 +56,7 @@ export function Skills() {
 
   return (
     <section id="skills" className="py-20 md:py-28 px-4 section-gradient-emerald relative overflow-hidden">
-      {/* Floating orbs - VIVID */}
-      <div className="orb orb-cyan w-[280px] h-[280px] -top-20 left-1/4" style={{ animationDelay: "-2s" }} />
-      <div className="orb orb-pink w-[240px] h-[240px] bottom-10 right-10 opacity-40" style={{ animationDelay: "-6s" }} />
+      <SectionAmbient3D variant="skills" />
 
       <div className="mx-auto max-w-6xl relative z-10">
         <SectionHeading title="Skills & Tools" subtitle="Technologies I work with on a daily basis" />

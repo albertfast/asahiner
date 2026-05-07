@@ -2,9 +2,15 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, Github, BookOpen, Sparkles, ChevronDown } from "lucide-react";
+import { Star, Github, BookOpen, Sparkles, ChevronDown, ExternalLink } from "lucide-react";
+import dynamic from "next/dynamic";
 import { SectionHeading } from "./SectionHeading";
 import { featuredProjects, type ProjectColor } from "@/lib/data";
+
+const SectionAmbient3D = dynamic(
+  () => import("./SectionAmbient3D").then((mod) => ({ default: mod.SectionAmbient3D })),
+  { ssr: false }
+);
 
 interface GitHubRepo {
   id: number;
@@ -92,6 +98,8 @@ const colorConfig: Record<ProjectColor, {
 };
 
 const ITEMS_PER_PAGE = 6;
+const GITHUB_REPOS_URL =
+  "https://api.github.com/users/albertfast/repos?sort=updated&per_page=6";
 
 export function Projects() {
   const [repos, setRepos] = useState<GitHubRepo[]>([]);
@@ -101,7 +109,9 @@ export function Projects() {
 
   const fetchRepos = useCallback(async () => {
     try {
-      const res = await fetch("/api/github");
+      const res = await fetch(GITHUB_REPOS_URL, {
+        headers: { Accept: "application/vnd.github.v3+json" },
+      });
       if (res.ok) {
         const data = await res.json();
         setRepos(data);
@@ -125,6 +135,9 @@ export function Projects() {
       stars: p.stars,
       url: p.url,
       colabUrl: (p as { colabUrl?: string }).colabUrl,
+      issueUrl: (p as { issueUrl?: string }).issueUrl,
+      media: (p as { media?: string }).media,
+      mediaAlt: (p as { mediaAlt?: string }).mediaAlt,
       highlights: p.highlights,
       topics: p.topics,
       color: p.color as ProjectColor,
@@ -139,6 +152,9 @@ export function Projects() {
         stars: r.stargazers_count,
         url: r.html_url,
         colabUrl: undefined,
+        issueUrl: undefined,
+        media: undefined,
+        mediaAlt: undefined,
         highlights: [] as string[],
         topics: r.topics,
         color: "cyan" as ProjectColor,
@@ -158,10 +174,7 @@ export function Projects() {
 
   return (
     <section id="projects" className="py-20 md:py-28 px-4 section-gradient-mixed relative overflow-hidden">
-      {/* Floating orbs - VIVID */}
-      <div className="orb orb-cyan w-[320px] h-[320px] -top-20 -right-32" style={{ animationDelay: "-3s" }} />
-      <div className="orb orb-purple w-[280px] h-[280px] bottom-10 -left-24 opacity-40" style={{ animationDelay: "-7s" }} />
-      <div className="orb orb-pink w-[240px] h-[240px] top-1/3 right-1/4 opacity-35" style={{ animationDelay: "-11s" }} />
+      <SectionAmbient3D variant="projects" />
 
       <div className="mx-auto max-w-6xl relative z-10">
         <SectionHeading
@@ -218,6 +231,7 @@ export function Projects() {
           >
             {displayedProjects.map((project, i) => {
               const conf = colorConfig[project.color] || colorConfig.cyan;
+              const isGitHubUrl = project.url?.includes("github.com");
               return (
                 <motion.div
                   key={project.title + i}
@@ -230,6 +244,18 @@ export function Projects() {
                 >
                   {/* Colored accent glow in corner */}
                   <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${conf.accentGradient} rounded-full blur-3xl opacity-10 pointer-events-none group-hover:opacity-20 transition-opacity`} />
+
+                  {project.media && (
+                    <div className="relative mb-4 aspect-video overflow-hidden rounded-lg border border-border/30 bg-background/60">
+                      <img
+                        src={project.media}
+                        alt={project.mediaAlt || `${project.title} preview`}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                      />
+                      <div className={`absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t ${conf.accentGradient} opacity-20`} />
+                    </div>
+                  )}
 
                   {/* Top row: title + stars */}
                   <div className="flex items-start justify-between mb-3 relative">
@@ -309,15 +335,30 @@ export function Projects() {
                           <BookOpen className="w-4 h-4" />
                         </a>
                       )}
+                      {project.issueUrl && (
+                        <a
+                          href={project.issueUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`text-xs ${conf.icon} hover:opacity-80 transition-colors`}
+                          aria-label={`Open ${project.title} issue or pull request`}
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      )}
                       {project.url && (
                         <a
                           href={project.url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className={`text-xs ${conf.icon} hover:opacity-80 transition-colors`}
-                          aria-label={`Open ${project.title} on GitHub`}
+                          aria-label={`Open ${project.title}`}
                         >
-                          <Github className="w-4 h-4" />
+                          {isGitHubUrl ? (
+                            <Github className="w-4 h-4" />
+                          ) : (
+                            <ExternalLink className="w-4 h-4" />
+                          )}
                         </a>
                       )}
                     </div>

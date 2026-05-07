@@ -29,6 +29,9 @@ export const metadata: Metadata = {
     "Portfolio",
   ],
   authors: [{ name: "Ahmet Sahiner" }],
+  icons: {
+    icon: [{ url: "/logo.svg", type: "image/svg+xml" }],
+  },
   openGraph: {
     title: "Ahmet Sahiner | Full-Stack Developer",
     description:

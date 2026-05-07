@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { User, GraduationCap, FolderGit2, Briefcase } from "lucide-react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { SectionHeading } from "./SectionHeading";
 import { aboutContent } from "@/lib/data";
 import profilePhoto from "@/static/flash-story-sahne-1.jpg";
@@ -50,13 +49,10 @@ export function About() {
             <div className="relative">
               <div className="w-48 h-48 md:w-56 md:h-56 rounded-full bg-gradient-to-br from-cyan-accent to-purple-accent p-1 pulse-glow">
                 <div className="relative w-full h-full rounded-full bg-background overflow-hidden">
-                  <Image
-                    src={profilePhoto}
+                  <img
+                    src={profilePhoto.src}
                     alt="Ahmet Sahiner profile photo"
-                    fill
-                    priority
-                    sizes="(min-width: 768px) 224px, 192px"
-                    className="object-cover object-[50%_38%]"
+                    className="h-full w-full object-cover object-[50%_43%]"
                   />
                 </div>
               </div>

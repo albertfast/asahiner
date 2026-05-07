@@ -3,9 +3,15 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Send, Mail, Phone, Github, Linkedin, CheckCircle, MapPin, MessageSquare } from "lucide-react";
+import dynamic from "next/dynamic";
 import { SectionHeading } from "./SectionHeading";
 import { personalInfo } from "@/lib/data";
 import { toast } from "sonner";
+
+const SectionAmbient3D = dynamic(
+  () => import("./SectionAmbient3D").then((mod) => ({ default: mod.SectionAmbient3D })),
+  { ssr: false }
+);
 
 interface FormData {
   name: string;
@@ -45,31 +51,27 @@ export function Contact() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
     setSubmitting(true);
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (res.ok) {
-        toast.success("Message sent successfully!", {
-          icon: <CheckCircle className="w-4 h-4 text-green-500" />,
-        });
-        setForm({ name: "", email: "", subject: "", message: "" });
-        setErrors({});
-      } else {
-        toast.error("Failed to send message. Please try again.");
-      }
-    } catch {
-      toast.error("Network error. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
+    const body = [
+      `From: ${form.name} <${form.email}>`,
+      "",
+      form.message.trim(),
+    ].join("\n");
+    const mailto = `mailto:${personalInfo.email}?subject=${encodeURIComponent(
+      form.subject.trim()
+    )}&body=${encodeURIComponent(body)}`;
+
+    window.location.href = mailto;
+    toast.success("Email draft opened in your mail app.", {
+      icon: <CheckCircle className="w-4 h-4 text-green-500" />,
+    });
+    setForm({ name: "", email: "", subject: "", message: "" });
+    setErrors({});
+    setSubmitting(false);
   };
 
   const updateField = (field: keyof FormData, value: string) => {
@@ -81,10 +83,7 @@ export function Contact() {
 
   return (
     <section id="contact" className="py-20 md:py-28 px-4 section-gradient-cyan relative overflow-hidden">
-      {/* Floating orbs - VIVID */}
-      <div className="orb orb-cyan w-[300px] h-[300px] -top-20 -left-32" style={{ animationDelay: "-2s" }} />
-      <div className="orb orb-purple w-[260px] h-[260px] bottom-10 -right-20 opacity-40" style={{ animationDelay: "-6s" }} />
-      <div className="orb orb-emerald w-[220px] h-[220px] top-1/2 left-1/4 opacity-35" style={{ animationDelay: "-9s" }} />
+      <SectionAmbient3D variant="contact" />
 
       {/* Decorative element */}
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-accent/30 to-transparent" />
@@ -297,7 +296,7 @@ export function Contact() {
                 }}
               >
                 <Send className="w-4 h-4" />
-                {submitting ? "Sending..." : "Send Message"}
+                {submitting ? "Opening..." : "Send Message"}
               </motion.button>
             </form>
           </motion.div>

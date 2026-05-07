@@ -2,8 +2,16 @@
 
 import { motion } from "framer-motion";
 import { Award, Rocket, Users, Code, Trophy, Medal, Crown, Star } from "lucide-react";
+import dynamic from "next/dynamic";
 import { SectionHeading } from "./SectionHeading";
 import { awards } from "@/lib/data";
+import abstractStudy from "@/static/img_6745.jpeg";
+import babylineStudy from "@/static/babyline.jpeg";
+
+const SectionAmbient3D = dynamic(
+  () => import("./SectionAmbient3D").then((mod) => ({ default: mod.SectionAmbient3D })),
+  { ssr: false }
+);
 
 const awardIcons: Record<string, typeof Award> = {
   award: Trophy,
@@ -24,10 +32,7 @@ const trophyDecorations = [Crown, Medal, Star];
 export function Awards() {
   return (
     <section id="awards" className="py-20 md:py-28 px-4 section-gradient-amber relative overflow-hidden">
-      {/* Floating orbs - VIVID */}
-      <div className="orb orb-amber w-[300px] h-[300px] -top-16 right-0" style={{ animationDelay: "-3s" }} />
-      <div className="orb orb-cyan w-[240px] h-[240px] bottom-20 left-10 opacity-40" style={{ animationDelay: "-7s" }} />
-      <div className="orb orb-pink w-[220px] h-[220px] top-1/3 -left-16 opacity-35" style={{ animationDelay: "-10s" }} />
+      <SectionAmbient3D variant="awards" />
 
       <div className="mx-auto max-w-6xl relative z-10">
         <SectionHeading
@@ -90,6 +95,42 @@ export function Awards() {
             );
           })}
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="glass-card rounded-xl p-5 md:p-6 mt-6 hover-glow-cyan"
+        >
+          <div className="flex flex-col lg:flex-row gap-5 lg:items-center">
+            <div className="lg:w-1/3">
+              <h3 className="text-base font-semibold text-foreground">
+                Design Fundamentals Abstract Studies
+              </h3>
+              <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                Abstract art explorations from my Design Fundamentals coursework,
+                showing visual composition, balance, rhythm, and color practice
+                alongside my technical work.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-3 lg:flex-1">
+              {[
+                { src: abstractStudy.src, alt: "Abstract art study from Design Fundamentals" },
+                { src: babylineStudy.src, alt: "Babyline abstract art study from Design Fundamentals" },
+              ].map((item) => (
+                <div key={item.alt} className="aspect-[4/3] overflow-hidden rounded-lg border border-cyan-accent/20 bg-background/70">
+                  <img
+                    src={item.src}
+                    alt={item.alt}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

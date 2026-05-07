@@ -9,6 +9,7 @@ const eslintConfig = [
       "react-hooks/immutability": "off",
       "react-hooks/purity": "off",
       "react-hooks/set-state-in-effect": "off",
+      "@next/next/no-img-element": "off",
     },
   },
   {

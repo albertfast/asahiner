@@ -2,8 +2,14 @@
 
 import { motion } from "framer-motion";
 import { Atom, Eye, Orbit, Cpu, Search, Image } from "lucide-react";
+import dynamic from "next/dynamic";
 import { SectionHeading } from "./SectionHeading";
 import { researchInterests } from "@/lib/data";
+
+const SectionAmbient3D = dynamic(
+  () => import("./SectionAmbient3D").then((mod) => ({ default: mod.SectionAmbient3D })),
+  { ssr: false }
+);
 
 const researchIcons = [Atom, Eye, Orbit, Cpu, Search, Image];
 
@@ -19,10 +25,7 @@ const cardAccents = [
 export function Research() {
   return (
     <section id="research" className="py-20 md:py-28 px-4 section-gradient-pink relative overflow-hidden">
-      {/* Floating orbs - VIVID */}
-      <div className="orb orb-purple w-[300px] h-[300px] -top-16 right-10" style={{ animationDelay: "-3s" }} />
-      <div className="orb orb-cyan w-[240px] h-[240px] bottom-20 left-10 opacity-40" style={{ animationDelay: "-7s" }} />
-      <div className="orb orb-pink w-[200px] h-[200px] top-1/2 -right-10 opacity-35" style={{ animationDelay: "-10s" }} />
+      <SectionAmbient3D variant="research" />
 
       <div className="mx-auto max-w-6xl relative z-10">
         <SectionHeading

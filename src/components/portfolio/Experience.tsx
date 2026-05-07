@@ -2,8 +2,14 @@
 
 import { motion } from "framer-motion";
 import { Briefcase, Building2, Cpu, Brain, Zap, Code2, Users } from "lucide-react";
+import dynamic from "next/dynamic";
 import { SectionHeading } from "./SectionHeading";
 import { experiences } from "@/lib/data";
+
+const SectionAmbient3D = dynamic(
+  () => import("./SectionAmbient3D").then((mod) => ({ default: mod.SectionAmbient3D })),
+  { ssr: false }
+);
 
 const experienceAccentColors = [
   "cyan",
@@ -38,12 +44,7 @@ const accentColorMap: Record<string, { icon: string; bg: string; text: string; b
 export function Experience() {
   return (
     <section id="experience" className="py-20 md:py-28 px-4 section-gradient-indigo relative overflow-hidden">
-      {/* Floating orbs - VIVID */}
-      <div className="orb orb-cyan w-[300px] h-[300px] -top-20 -left-32" style={{ animationDelay: "-2s" }} />
-      <div className="orb orb-purple w-[260px] h-[260px] top-1/3 -right-20 opacity-40" style={{ animationDelay: "-5s" }} />
-      <div className="orb orb-amber w-[220px] h-[220px] bottom-20 left-1/3 opacity-35" style={{ animationDelay: "-8s" }} />
-
-      {/* Cyber grid background */}
+      <SectionAmbient3D variant="experience" />
       <div className="cyber-grid" />
 
       <div className="mx-auto max-w-5xl relative z-10">
