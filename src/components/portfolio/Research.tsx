@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Atom, Eye, Orbit, Cpu, Search, Image } from "lucide-react";
 import dynamic from "next/dynamic";
+import { SectionReveal } from "./SectionReveal";
 import { SectionHeading } from "./SectionHeading";
 import { researchInterests } from "@/lib/data";
 
@@ -28,51 +29,54 @@ export function Research() {
       <SectionAmbient3D variant="research" />
 
       <div className="mx-auto max-w-6xl relative z-10">
-        <SectionHeading
-          title="Research Interests"
-          subtitle="Exploring the frontiers of quantum computing, machine learning, and beyond"
-        />
+        <SectionReveal>
+          <SectionHeading
+            title="Research Interests"
+            subtitle="Exploring the frontiers of quantum computing, machine learning, and beyond"
+            number="05"
+          />
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {researchInterests.map((topic, i) => {
-            const Icon = researchIcons[i];
-            const accent = cardAccents[i % cardAccents.length];
-            return (
-              <motion.div
-                key={topic.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.08 }}
-                whileHover={{ scale: 1.03, y: -4 }}
-                className={`glass-card rounded-xl p-5 ${accent.glow} ${accent.borderAccent} transition-all duration-300 group relative overflow-hidden`}
-              >
-                {/* Colored corner accent */}
-                <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${accent.cornerBg} to-transparent rounded-bl-3xl opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none`} />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {researchInterests.map((topic, i) => {
+              const Icon = researchIcons[i];
+              const accent = cardAccents[i % cardAccents.length];
+              return (
+                <motion.div
+                  key={topic.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.08 }}
+                  whileHover={{ scale: 1.03, y: -4 }}
+                  className={`glass-card rounded-xl p-5 ${accent.glow} ${accent.borderAccent} transition-all duration-300 group relative overflow-hidden`}
+                >
+                  {/* Colored corner accent */}
+                  <div className={`absolute top-0 right-0 w-20 h-20 bg-linear-to-br ${accent.cornerBg} to-transparent rounded-bl-3xl opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none`} />
 
-                <div className={`w-10 h-10 rounded-lg ${accent.iconBg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <Icon className={`w-5 h-5 ${accent.iconText}`} />
-                </div>
-                <h3 className="text-sm font-semibold text-foreground mb-2">
-                  {topic.title}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-                  {topic.description}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {topic.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className={`px-2 py-0.5 text-[10px] font-medium rounded-md ${accent.pill} border`}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+                  <div className={`w-10 h-10 rounded-lg ${accent.iconBg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                    <Icon className={`w-5 h-5 ${accent.iconText}`} />
+                  </div>
+                  <h3 className="text-sm font-semibold text-foreground mb-2">
+                    {topic.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                    {topic.description}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {topic.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className={`px-2 py-0.5 text-[10px] font-medium rounded-md ${accent.pill} border`}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </SectionReveal>
       </div>
     </section>
   );

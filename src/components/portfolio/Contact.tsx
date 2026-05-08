@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Send, Mail, Phone, Github, Linkedin, CheckCircle, MapPin, MessageSquare } from "lucide-react";
 import dynamic from "next/dynamic";
+import { SectionReveal } from "./SectionReveal";
 import { SectionHeading } from "./SectionHeading";
 import { personalInfo } from "@/lib/data";
 import { toast } from "sonner";
@@ -86,13 +87,15 @@ export function Contact() {
       <SectionAmbient3D variant="contact" />
 
       {/* Decorative element */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-accent/30 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-cyan-accent/30 to-transparent" />
 
       <div className="mx-auto max-w-6xl relative z-10">
-        <SectionHeading
-          title="Get in Touch"
-          subtitle="Have a question or want to collaborate? I'd love to hear from you"
-        />
+        <SectionReveal>
+          <SectionHeading
+            title="Get in Touch"
+            subtitle="Have a question or want to collaborate? I'd love to hear from you"
+            number="07"
+          />
 
         <div className="grid md:grid-cols-5 gap-8 md:gap-12">
           {/* Contact Info Sidebar */}
@@ -133,6 +136,17 @@ export function Contact() {
                 })}
               </div>
             </div>
+            </motion.div>
+
+            {/* Contact Form */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="md:col-span-3"
+            >
+              <form onSubmit={handleSubmit} className="space-y-4" noValidate>
 
             <motion.div
               whileHover={{ scale: 1.02 }}
@@ -140,7 +154,7 @@ export function Contact() {
               className="glass-card rounded-xl p-4 hover-glow-cyan"
             >
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-accent/15 to-purple-accent/15 flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-linear-to-br from-cyan-accent/15 to-purple-accent/15 flex items-center justify-center shrink-0">
                   <MapPin className="w-4 h-4 text-cyan-accent" />
                 </div>
                 <div>
@@ -153,9 +167,10 @@ export function Contact() {
               </div>
             </motion.div>
           </motion.div>
-
-          {/* Contact Form */}
-          <motion.div
+              </form>
+            </motion.div>
+          </div>
+        </SectionReveal>
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}

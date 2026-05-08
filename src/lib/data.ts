@@ -400,6 +400,7 @@ export const navLinks = [
   { label: "Skills", href: "#skills" },
   { label: "Experience", href: "#experience" },
   { label: "Projects", href: "#projects" },
+  { label: "Activity", href: "#activity" },
   { label: "Research", href: "#research" },
   { label: "Awards", href: "#awards" },
   { label: "Contact", href: "#contact" },

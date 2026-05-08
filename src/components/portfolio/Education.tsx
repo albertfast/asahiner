@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { GraduationCap, Award, Shield, CheckCircle } from "lucide-react";
+import { GraduationCap, Award, Shield, CheckCircle, Trophy, Star } from "lucide-react";
 import dynamic from "next/dynamic";
 import { SectionHeading } from "./SectionHeading";
+import { SectionReveal } from "./SectionReveal";
 import {
   educationEntries,
   certifications,
@@ -34,10 +35,10 @@ const certBorders = [
 ];
 
 const certIcons = [
-  "text-cyan-accent bg-cyan-accent/10",
-  "text-purple-accent bg-purple-accent/10",
-  "text-emerald-accent bg-emerald-accent/10",
-  "text-amber-accent bg-amber-accent/10",
+  { icon: GraduationCap, class: "text-cyan-accent bg-cyan-accent/10" },
+  { icon: Shield, class: "text-purple-accent bg-purple-accent/10" },
+  { icon: Award, class: "text-emerald-accent bg-emerald-accent/10" },
+  { icon: Trophy, class: "text-amber-accent bg-amber-accent/10" },
 ];
 
 function TimelineItem({
@@ -114,91 +115,98 @@ export function Education() {
       <EducationCyberBackground />
 
       <div className="mx-auto max-w-5xl relative z-10">
-        <SectionHeading title="Education" subtitle="My academic journey and certifications" />
+        <SectionReveal>
+          <SectionHeading title="Education" subtitle="My academic journey and certifications" number="02" />
 
-        {/* Education Timeline */}
-        <div className="relative">
-          {educationEntries.map((entry, i) => (
-            <TimelineItem key={i} {...entry} index={i} />
-          ))}
-        </div>
+          {/* Education Timeline */}
+          <div className="relative">
+            {educationEntries.map((entry, i) => (
+              <TimelineItem key={i} {...entry} index={i} />
+            ))}
+          </div>
 
-        {/* Dean's List */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mt-10"
-        >
-          <div className="glass-card rounded-xl p-4 md:p-6 hover-glow-purple transition-all duration-300">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-accent/20 to-amber-accent/5 flex items-center justify-center">
-                <Award className="w-4 h-4 text-amber-accent" />
+          {/* Enhanced Dean's List */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="mt-10"
+          >
+            <div className="glass-card rounded-xl p-4 md:p-6 hover-glow-purple transition-all duration-300">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-accent/20 to-amber-accent/5 flex items-center justify-center">
+                  <Star className="w-5 h-5 text-amber-accent" />
+                </div>
+                <div>
+                  <h3 className="text-base md:text-lg font-semibold">
+                    Dean&apos;s Honor List
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Academic excellence recognition for outstanding performance
+                  </p>
+                </div>
               </div>
-              <h3 className="text-base md:text-lg font-semibold">
-                Dean&apos;s Honor List
-              </h3>
+              <div className="flex flex-wrap gap-2">
+                {deansList.map((semester, i) => (
+                  <motion.span
+                    key={semester}
+                    whileHover={{ scale: 1.05 }}
+                    className="px-3 py-1.5 text-xs font-medium rounded-full bg-purple-accent/10 text-purple-light border border-purple-accent/20 pulse-glow-purple cursor-default flex items-center gap-1"
+                  >
+                    <CheckCircle className="w-3 h-3" />
+                    {semester}
+                  </motion.span>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {deansList.map((semester) => (
-                <motion.span
-                  key={semester}
-                  whileHover={{ scale: 1.05 }}
-                  className="px-3 py-1.5 text-xs font-medium rounded-full bg-purple-accent/10 text-purple-light border border-purple-accent/20 pulse-glow-purple cursor-default"
-                >
-                  <CheckCircle className="w-3 h-3 inline mr-1 -mt-0.5" />
-                  {semester}
-                </motion.span>
-              ))}
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
 
-        {/* Certifications */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-10"
-        >
-          <div className="flex items-center gap-2 mb-6">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-accent/20 to-cyan-accent/5 flex items-center justify-center">
-              <Shield className="w-4 h-4 text-cyan-accent" />
+          {/* Certifications with Icon-based Cards */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mt-10"
+          >
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-accent/20 to-cyan-accent/5 flex items-center justify-center">
+                <Shield className="w-4 h-4 text-cyan-accent" />
+              </div>
+              <h3 className="text-base md:text-lg font-semibold">Certifications</h3>
             </div>
-            <h3 className="text-base md:text-lg font-semibold">Certifications</h3>
-          </div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            {certifications.map((cert, i) => {
-              const borderClass = certBorders[i % certBorders.length];
-              const iconClass = certIcons[i % certIcons.length];
-              return (
-                <motion.div
-                  key={i}
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className={`glass-card rounded-xl p-4 transition-all duration-300 ${borderClass}`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${iconClass}`}>
-                      <GraduationCap className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-semibold">{cert.name}</h4>
-                      <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5 text-xs text-muted-foreground">
-                        {cert.credentialId && (
-                          <span className="px-2 py-0.5 rounded bg-muted/50">ID: {cert.credentialId}</span>
-                        )}
-                        {cert.date && <span>{cert.date}</span>}
+            <div className="grid sm:grid-cols-2 gap-4">
+              {certifications.map((cert, i) => {
+                const borderClass = certBorders[i % certBorders.length];
+                const { icon: Icon, class: iconClass } = certIcons[i % certIcons.length];
+                return (
+                  <motion.div
+                    key={i}
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    className={`glass-card rounded-xl p-4 transition-all duration-300 ${borderClass}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${iconClass}`}>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-semibold">{cert.name}</h4>
+                        <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5 text-xs text-muted-foreground">
+                          {cert.credentialId && (
+                            <span className="px-2 py-0.5 rounded bg-muted/50">ID: {cert.credentialId}</span>
+                          )}
+                          {cert.date && <span>{cert.date}</span>}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+        </SectionReveal>
       </div>
     </section>
   );

@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, Github, BookOpen, Sparkles, ChevronDown, ExternalLink } from "lucide-react";
+import { Star, Github, BookOpen, Sparkles, ChevronDown, ExternalLink, Eye } from "lucide-react";
 import dynamic from "next/dynamic";
+import { SectionReveal } from "./SectionReveal";
 import { SectionHeading } from "./SectionHeading";
 import { featuredProjects, type ProjectColor } from "@/lib/data";
 
@@ -142,6 +143,8 @@ export function Projects() {
       topics: p.topics,
       color: p.color as ProjectColor,
       isFeatured: true,
+      status: "Active" as string,
+      demoUrl: (p as { demoUrl?: string }).demoUrl,
     })),
     ...repos
       .filter((r) => !featuredProjects.some((fp) => fp.url === r.html_url))
@@ -159,8 +162,10 @@ export function Projects() {
         topics: r.topics,
         color: "cyan" as ProjectColor,
         isFeatured: false,
-      })),
-  ];
+        status: "Open Source" as string,
+        demoUrl: undefined,
+        })),
+        ];
 
   const filteredProjects =
     filter === "All"
@@ -177,10 +182,12 @@ export function Projects() {
       <SectionAmbient3D variant="projects" />
 
       <div className="mx-auto max-w-6xl relative z-10">
-        <SectionHeading
-          title="Projects"
-          subtitle="Featured work and open source contributions"
-        />
+        <SectionReveal>
+          <SectionHeading
+            title="Projects"
+            subtitle="Featured work and open source contributions"
+            number="04"
+          />
 
         {/* Filter */}
         <motion.div
@@ -198,7 +205,7 @@ export function Projects() {
               whileTap={{ scale: 0.95 }}
               className={`px-4 py-2 rounded-lg text-xs font-medium transition-all duration-300 ${
                 filter === opt
-                  ? "bg-gradient-to-r from-cyan-accent to-purple-accent text-white glow-cyan shadow-lg shadow-cyan-accent/10"
+                  ? "bg-linear-to-r from-cyan-accent to-purple-accent text-white glow-cyan shadow-lg shadow-cyan-accent/10"
                   : "glass-card text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -243,7 +250,18 @@ export function Projects() {
                   className={`glass-card rounded-xl p-5 ${conf.glow} ${conf.border} transition-all duration-300 group flex flex-col relative overflow-hidden`}
                 >
                   {/* Colored accent glow in corner */}
-                  <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${conf.accentGradient} rounded-full blur-3xl opacity-10 pointer-events-none group-hover:opacity-20 transition-opacity`} />
+                  <div className={`absolute top-0 right-0 w-24 h-24 bg-linear-to-br ${conf.accentGradient} rounded-full blur-3xl opacity-10 pointer-events-none group-hover:opacity-20 transition-opacity`} />
+
+                  {/* Status Badge */}
+                  <div className="absolute top-3 right-3">
+                    <span className={`px-2 py-1 text-[10px] font-medium rounded-full ${
+                      project.status === "Active" ? "bg-green-400/10 text-green-400 border border-green-400/30" :
+                      project.status === "Open Source" ? "bg-blue-400/10 text-blue-400 border border-blue-400/30" :
+                      "bg-slate-400/10 text-slate-400 border border-slate-400/30"
+                    }`}>
+                      {project.status}
+                    </span>
+                  </div>
 
                   {project.media && (
                     <div className="relative mb-4 aspect-video overflow-hidden rounded-lg border border-border/30 bg-background/60">
@@ -253,7 +271,7 @@ export function Projects() {
                         className="h-full w-full object-cover"
                         loading="lazy"
                       />
-                      <div className={`absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t ${conf.accentGradient} opacity-20`} />
+                      <div className={`absolute inset-x-0 bottom-0 h-10 bg-linear-to-t ${conf.accentGradient} opacity-20`} />
                     </div>
                   )}
 
@@ -324,6 +342,17 @@ export function Projects() {
                       )}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
+                      {project.demoUrl && (
+                        <a
+                          href={project.demoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-muted-foreground hover:text-cyan-accent transition-colors"
+                          aria-label={`Live preview of ${project.title}`}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </a>
+                      )}
                       {project.colabUrl && (
                         <a
                           href={project.colabUrl}
@@ -393,6 +422,7 @@ export function Projects() {
             </motion.button>
           </motion.div>
         )}
+        </SectionReveal>
       </div>
     </section>
   );
