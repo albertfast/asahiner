@@ -180,4 +180,7 @@ export function About() {
             })}
           </motion.div>
         </SectionReveal>
+      </div>
+    </section>
+  );
 }
