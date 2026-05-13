@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/portfolio/ThemeProvider";
 import { PageLoader } from "@/components/portfolio/PageLoader";
+<meta name="google-site-verification" content="googlecca19089ca8d51e8" />
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
