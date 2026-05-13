@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, Github, BookOpen, Sparkles, ChevronDown, ExternalLink, Eye } from "lucide-react";
+import { Star, Github, BookOpen, Sparkles, ChevronDown, ExternalLink } from "lucide-react";
 import dynamic from "next/dynamic";
-import { SectionReveal } from "./SectionReveal";
 import { SectionHeading } from "./SectionHeading";
 import { featuredProjects, type ProjectColor } from "@/lib/data";
+import { useTilt } from "@/hooks/use-tilt";
 
 const SectionAmbient3D = dynamic(
   () => import("./SectionAmbient3D").then((mod) => ({ default: mod.SectionAmbient3D })),
@@ -35,6 +35,7 @@ const colorConfig: Record<ProjectColor, {
   icon: string;
   highlight: string;
   accentGradient: string;
+  borderGlow: string;
 }> = {
   cyan: {
     text: "text-cyan-light",
@@ -45,6 +46,7 @@ const colorConfig: Record<ProjectColor, {
     icon: "text-cyan-accent",
     highlight: "bg-cyan-accent/15 text-cyan-light",
     accentGradient: "from-cyan-accent to-cyan-light",
+    borderGlow: "group-hover:shadow-[0_0_20px_rgba(6,182,212,0.3),inset_0_0_20px_rgba(6,182,212,0.05)]",
   },
   purple: {
     text: "text-purple-light",
@@ -55,6 +57,7 @@ const colorConfig: Record<ProjectColor, {
     icon: "text-purple-accent",
     highlight: "bg-purple-accent/15 text-purple-light",
     accentGradient: "from-purple-accent to-purple-light",
+    borderGlow: "group-hover:shadow-[0_0_20px_rgba(168,85,247,0.3),inset_0_0_20px_rgba(168,85,247,0.05)]",
   },
   emerald: {
     text: "text-emerald-accent",
@@ -65,6 +68,7 @@ const colorConfig: Record<ProjectColor, {
     icon: "text-emerald-accent",
     highlight: "bg-emerald-accent/15 text-emerald-accent",
     accentGradient: "from-emerald-accent to-emerald-accent/70",
+    borderGlow: "group-hover:shadow-[0_0_20px_rgba(16,185,129,0.3),inset_0_0_20px_rgba(16,185,129,0.05)]",
   },
   amber: {
     text: "text-amber-accent",
@@ -75,6 +79,7 @@ const colorConfig: Record<ProjectColor, {
     icon: "text-amber-accent",
     highlight: "bg-amber-accent/15 text-amber-accent",
     accentGradient: "from-amber-accent to-amber-accent/70",
+    borderGlow: "group-hover:shadow-[0_0_20px_rgba(245,158,11,0.3),inset_0_0_20px_rgba(245,158,11,0.05)]",
   },
   pink: {
     text: "text-pink-accent",
@@ -85,6 +90,7 @@ const colorConfig: Record<ProjectColor, {
     icon: "text-pink-accent",
     highlight: "bg-pink-accent/15 text-pink-accent",
     accentGradient: "from-pink-accent to-pink-accent/70",
+    borderGlow: "group-hover:shadow-[0_0_20px_rgba(236,72,153,0.3),inset_0_0_20px_rgba(236,72,153,0.05)]",
   },
   indigo: {
     text: "text-indigo-accent",
@@ -95,12 +101,188 @@ const colorConfig: Record<ProjectColor, {
     icon: "text-indigo-accent",
     highlight: "bg-indigo-accent/15 text-indigo-accent",
     accentGradient: "from-indigo-accent to-indigo-accent/70",
+    borderGlow: "group-hover:shadow-[0_0_20px_rgba(99,102,241,0.3),inset_0_0_20px_rgba(99,102,241,0.05)]",
   },
 };
 
 const ITEMS_PER_PAGE = 6;
 const GITHUB_REPOS_URL =
   "https://api.github.com/users/albertfast/repos?sort=updated&per_page=6";
+
+// Individual project card with 3D tilt
+function TiltProjectCard({ project, index, conf, isGitHubUrl }: {
+  project: {
+    title: string;
+    description: string;
+    tags: string[];
+    stars: number;
+    url?: string;
+    colabUrl?: string;
+    issueUrl?: string;
+    media?: string;
+    mediaAlt?: string;
+    highlights: string[];
+    topics?: string[];
+    color: ProjectColor;
+    isFeatured: boolean;
+  };
+  index: number;
+  conf: typeof colorConfig.cyan;
+  isGitHubUrl: boolean;
+}) {
+  const { transform, glareStyle, onMouseMove, onMouseLeave } = useTilt();
+
+  return (
+    <motion.div
+      key={project.title + index}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.4, delay: index * 0.08, type: "spring", stiffness: 200, damping: 20 }}
+      className={`${conf.glow} ${conf.border} transition-shadow duration-300 group flex flex-col relative overflow-hidden rounded-xl`}
+      style={{ perspective: "800px" }}
+    >
+      <div
+        className="glass-card rounded-xl p-5 flex flex-col relative overflow-hidden h-full"
+        style={{
+          transform,
+          transition: "transform 0.15s ease-out, box-shadow 0.3s ease",
+          transformStyle: "preserve-3d",
+        }}
+        onMouseMove={onMouseMove}
+        onMouseLeave={onMouseLeave}
+      >
+        {/* Glare/shine effect */}
+        <div style={glareStyle} />
+
+        {/* Colored accent glow in corner */}
+        <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${conf.accentGradient} rounded-full blur-3xl opacity-10 pointer-events-none group-hover:opacity-20 transition-opacity`} />
+
+        {/* Border glow on hover */}
+        <div className={`absolute inset-0 rounded-xl border border-transparent ${conf.borderGlow} transition-shadow duration-300 pointer-events-none`} />
+
+        {project.media && (
+          <div className="relative mb-4 aspect-video overflow-hidden rounded-lg border border-border/30 bg-background/60">
+            <img
+              src={project.media}
+              alt={project.mediaAlt || `${project.title} preview`}
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+            <div className={`absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t ${conf.accentGradient} opacity-20`} />
+          </div>
+        )}
+
+        {/* Top row: title + stars */}
+        <div className="flex items-start justify-between mb-3 relative z-[2]">
+          <h3 className={`text-sm font-semibold text-foreground group-hover:${conf.text} transition-colors line-clamp-1 flex items-center gap-2`}>
+            {project.isFeatured && (
+              <Sparkles className="w-3.5 h-3.5 text-amber-accent shrink-0" />
+            )}
+            {project.title}
+          </h3>
+          {project.stars > 0 && (
+            <div className="flex items-center gap-1 text-xs text-amber-accent shrink-0 ml-2">
+              <Star className="w-3.5 h-3.5 fill-amber-accent" />
+              <span className="font-medium">{project.stars}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Description */}
+        <p className="text-xs text-muted-foreground leading-relaxed mb-4 flex-1 line-clamp-4 relative z-[2]">
+          {project.description}
+        </p>
+
+        {/* Highlight badges */}
+        {project.highlights && project.highlights.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-3 relative z-[2]">
+            {project.highlights.map((h) => (
+              <span
+                key={h}
+                className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${conf.highlight}`}
+              >
+                {h}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Topics */}
+        {project.topics && project.topics.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-3 relative z-[2]">
+            {project.topics.slice(0, 4).map((topic) => (
+              <span
+                key={topic}
+                className={`px-2 py-0.5 text-[10px] font-medium rounded-md ${conf.pill} border`}
+              >
+                {topic}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Bottom row: tags + action buttons */}
+        <div className="flex items-center justify-between mt-auto pt-3 border-t border-border/30 relative z-[2]">
+          <div className="flex flex-wrap gap-1.5">
+            {project.tags.slice(0, 3).map((tag) => (
+              <span
+                key={tag}
+                className={`px-2 py-0.5 text-[10px] font-medium rounded-md ${conf.pill} border`}
+              >
+                {tag}
+              </span>
+            ))}
+            {project.tags.length > 3 && (
+              <span className="px-2 py-0.5 text-[10px] text-muted-foreground">
+                +{project.tags.length - 3}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {project.colabUrl && (
+              <a
+                href={project.colabUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-muted-foreground hover:text-amber-accent transition-colors"
+                aria-label={`Open ${project.title} in Colab`}
+              >
+                <BookOpen className="w-4 h-4" />
+              </a>
+            )}
+            {project.issueUrl && (
+              <a
+                href={project.issueUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`text-xs ${conf.icon} hover:opacity-80 transition-colors`}
+                aria-label={`Open ${project.title} issue or pull request`}
+              >
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            )}
+            {project.url && (
+              <a
+                href={project.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`text-xs ${conf.icon} hover:opacity-80 transition-colors`}
+                aria-label={`Open ${project.title}`}
+              >
+                {isGitHubUrl ? (
+                  <Github className="w-4 h-4" />
+                ) : (
+                  <ExternalLink className="w-4 h-4" />
+                )}
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
 
 export function Projects() {
   const [repos, setRepos] = useState<GitHubRepo[]>([]);
@@ -143,8 +325,6 @@ export function Projects() {
       topics: p.topics,
       color: p.color as ProjectColor,
       isFeatured: true,
-      status: "Active" as string,
-      demoUrl: (p as { demoUrl?: string }).demoUrl,
     })),
     ...repos
       .filter((r) => !featuredProjects.some((fp) => fp.url === r.html_url))
@@ -162,10 +342,8 @@ export function Projects() {
         topics: r.topics,
         color: "cyan" as ProjectColor,
         isFeatured: false,
-        status: "Open Source" as string,
-        demoUrl: undefined,
-        })),
-        ];
+      })),
+  ];
 
   const filteredProjects =
     filter === "All"
@@ -182,12 +360,10 @@ export function Projects() {
       <SectionAmbient3D variant="projects" />
 
       <div className="mx-auto max-w-6xl relative z-10">
-        <SectionReveal>
-          <SectionHeading
-            title="Projects"
-            subtitle="Featured work and open source contributions"
-            number="04"
-          />
+        <SectionHeading
+          title="Projects"
+          subtitle="Featured work and open source contributions"
+        />
 
         {/* Filter */}
         <motion.div
@@ -205,7 +381,7 @@ export function Projects() {
               whileTap={{ scale: 0.95 }}
               className={`px-4 py-2 rounded-lg text-xs font-medium transition-all duration-300 ${
                 filter === opt
-                  ? "bg-linear-to-r from-cyan-accent to-purple-accent text-white glow-cyan shadow-lg shadow-cyan-accent/10"
+                  ? "bg-gradient-to-r from-cyan-accent to-purple-accent text-white glow-cyan shadow-lg shadow-cyan-accent/10"
                   : "glass-card text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -240,159 +416,13 @@ export function Projects() {
               const conf = colorConfig[project.color] || colorConfig.cyan;
               const isGitHubUrl = project.url?.includes("github.com");
               return (
-                <motion.div
+                <TiltProjectCard
                   key={project.title + i}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.08, type: "spring", stiffness: 200, damping: 20 }}
-                  whileHover={{ scale: 1.03, y: -6 }}
-                  className={`glass-card rounded-xl p-5 ${conf.glow} ${conf.border} transition-all duration-300 group flex flex-col relative overflow-hidden`}
-                >
-                  {/* Colored accent glow in corner */}
-                  <div className={`absolute top-0 right-0 w-24 h-24 bg-linear-to-br ${conf.accentGradient} rounded-full blur-3xl opacity-10 pointer-events-none group-hover:opacity-20 transition-opacity`} />
-
-                  {/* Status Badge */}
-                  <div className="absolute top-3 right-3">
-                    <span className={`px-2 py-1 text-[10px] font-medium rounded-full ${
-                      project.status === "Active" ? "bg-green-400/10 text-green-400 border border-green-400/30" :
-                      project.status === "Open Source" ? "bg-blue-400/10 text-blue-400 border border-blue-400/30" :
-                      "bg-slate-400/10 text-slate-400 border border-slate-400/30"
-                    }`}>
-                      {project.status}
-                    </span>
-                  </div>
-
-                  {project.media && (
-                    <div className="relative mb-4 aspect-video overflow-hidden rounded-lg border border-border/30 bg-background/60">
-                      <img
-                        src={project.media}
-                        alt={project.mediaAlt || `${project.title} preview`}
-                        className="h-full w-full object-cover"
-                        loading="lazy"
-                      />
-                      <div className={`absolute inset-x-0 bottom-0 h-10 bg-linear-to-t ${conf.accentGradient} opacity-20`} />
-                    </div>
-                  )}
-
-                  {/* Top row: title + stars */}
-                  <div className="flex items-start justify-between mb-3 relative">
-                    <h3 className={`text-sm font-semibold text-foreground group-hover:${conf.text} transition-colors line-clamp-1 flex items-center gap-2`}>
-                      {project.isFeatured && (
-                        <Sparkles className="w-3.5 h-3.5 text-amber-accent shrink-0" />
-                      )}
-                      {project.title}
-                    </h3>
-                    {project.stars > 0 && (
-                      <div className="flex items-center gap-1 text-xs text-amber-accent shrink-0 ml-2">
-                        <Star className="w-3.5 h-3.5 fill-amber-accent" />
-                        <span className="font-medium">{project.stars}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-xs text-muted-foreground leading-relaxed mb-4 flex-1 line-clamp-4">
-                    {project.description}
-                  </p>
-
-                  {/* Highlight badges */}
-                  {project.highlights && project.highlights.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-3">
-                      {project.highlights.map((h) => (
-                        <span
-                          key={h}
-                          className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${conf.highlight}`}
-                        >
-                          {h}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Topics */}
-                  {project.topics && project.topics.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-3">
-                      {project.topics.slice(0, 4).map((topic) => (
-                        <span
-                          key={topic}
-                          className={`px-2 py-0.5 text-[10px] font-medium rounded-md ${conf.pill} border`}
-                        >
-                          {topic}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Bottom row: tags + action buttons */}
-                  <div className="flex items-center justify-between mt-auto pt-3 border-t border-border/30">
-                    <div className="flex flex-wrap gap-1.5">
-                      {project.tags.slice(0, 3).map((tag) => (
-                        <span
-                          key={tag}
-                          className={`px-2 py-0.5 text-[10px] font-medium rounded-md ${conf.pill} border`}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                      {project.tags.length > 3 && (
-                        <span className="px-2 py-0.5 text-[10px] text-muted-foreground">
-                          +{project.tags.length - 3}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      {project.demoUrl && (
-                        <a
-                          href={project.demoUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-muted-foreground hover:text-cyan-accent transition-colors"
-                          aria-label={`Live preview of ${project.title}`}
-                        >
-                          <Eye className="w-4 h-4" />
-                        </a>
-                      )}
-                      {project.colabUrl && (
-                        <a
-                          href={project.colabUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-muted-foreground hover:text-amber-accent transition-colors"
-                          aria-label={`Open ${project.title} in Colab`}
-                        >
-                          <BookOpen className="w-4 h-4" />
-                        </a>
-                      )}
-                      {project.issueUrl && (
-                        <a
-                          href={project.issueUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`text-xs ${conf.icon} hover:opacity-80 transition-colors`}
-                          aria-label={`Open ${project.title} issue or pull request`}
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      )}
-                      {project.url && (
-                        <a
-                          href={project.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`text-xs ${conf.icon} hover:opacity-80 transition-colors`}
-                          aria-label={`Open ${project.title}`}
-                        >
-                          {isGitHubUrl ? (
-                            <Github className="w-4 h-4" />
-                          ) : (
-                            <ExternalLink className="w-4 h-4" />
-                          )}
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
+                  project={project}
+                  index={i}
+                  conf={conf}
+                  isGitHubUrl={isGitHubUrl}
+                />
               );
             })}
           </motion.div>
@@ -422,7 +452,6 @@ export function Projects() {
             </motion.button>
           </motion.div>
         )}
-        </SectionReveal>
       </div>
     </section>
   );
