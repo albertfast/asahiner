@@ -13,6 +13,13 @@ export const personalInfo = {
   linkedinUrl: "https://linkedin.com/in/ahmetsahiner",
 };
 
+export const heroTypingTexts = [
+  "Full-Stack Developer",
+  "Computer Science Student",
+  "Salesforce Developer",
+  "AI Researcher",
+];
+
 export const aboutContent = {
   paragraphs: [
     "Born and raised in Istanbul, I began my academic journey in finance and earned a Bachelor of Science from Adnan Menderes University in 2015. After moving to the United States, I reinvented myself as a software engineer. I obtained Salesforce Administrator and Platform Developer I certifications and immersed myself in web and mobile development at City College of San Francisco. I’m now completing an Associate of Science in Computer Science (3.63 GPA) while earning certificates in Advanced Web Development Techniques, Web Application Programming, and Front‑End Web Development.",
@@ -400,6 +407,7 @@ export const navLinks = [
   { label: "Skills", href: "#skills" },
   { label: "Experience", href: "#experience" },
   { label: "Projects", href: "#projects" },
+  { label: "Activity", href: "#activity" },
   { label: "Research", href: "#research" },
   { label: "Awards", href: "#awards" },
   { label: "Contact", href: "#contact" },
